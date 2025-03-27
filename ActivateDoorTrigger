@@ -1,0 +1,40 @@
+using UnityEngine;
+
+public class DoorTrigger : MonoBehaviour
+{
+    public Animator doorAnimator; // Asigna el Animator de la puerta en el Inspector
+    private static readonly string openTrigger = "Open";  // Nombre del trigger para abrir
+    private static readonly string closeTrigger = "Close"; // Nombre del trigger para cerrar
+
+    private bool isOpen = false; // Controla si la puerta está abierta o cerrada
+
+    private void Start()
+    {
+        if (doorAnimator == null)
+        {
+            Debug.LogError("❌ No se encontró el Animator. Asigna la puerta en el Inspector.");
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        Debug.Log("Objeto entró en el trigger: " + other.gameObject.name); // 🟢 Verificar quién entra
+
+        if (other.CompareTag("Player") && doorAnimator != null && !isOpen)
+        {
+            Debug.Log("¡Player detectado! Abriendo puerta..."); // 🟢 Mensaje si el Player es detectado
+            doorAnimator.SetTrigger(openTrigger);
+            isOpen = true; // La puerta está abierta
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Player") && doorAnimator != null && isOpen)
+        {
+            Debug.Log("Player salió, cerrando puerta...");
+            doorAnimator.SetTrigger(closeTrigger);
+            isOpen = false; // La puerta se cierra
+        }
+    }
+}
