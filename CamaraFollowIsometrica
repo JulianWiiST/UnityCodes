@@ -1,0 +1,55 @@
+using UnityEngine;
+
+public class IsometricCameraFollow : MonoBehaviour
+{
+    [Header("Objetivo")]
+    public Transform target;                    // El transform del jugador a seguir
+
+    [Header("Configuración Isométrica")]
+    public Vector3 offset = new Vector3(10, 10, 10);   // Offset desde el jugador (para vista isométrica)
+    public float smoothSpeed = 0.125f;          // Qué tan suave es el seguimiento
+    public bool lookAtTarget = true;            // Si la cámara debe mirar al objetivo
+
+    [Header("Ajustes de Rotación Isométrica")]
+    public Vector3 rotation = new Vector3(35, 45, 0);  // Rotación tópica isométrica (35� en X, 45� en Y)
+
+    private Vector3 velocity = Vector3.zero;
+
+    private void Start()
+    {
+        // Aplicar la rotación isomótrica a la cómara
+        transform.rotation = Quaternion.Euler(rotation);
+    }
+
+    void LateUpdate()
+    {
+        if (target == null)
+        {
+            Debug.LogWarning("óLa cámara no tiene un objetivo asignado!");
+            return;
+        }
+
+        // Calcular la posición deseada
+        Vector3 desiredPosition = target.position + offset;
+
+        // Interpolar suavemente la posición actual hacia la posición deseada
+        transform.position = Vector3.SmoothDamp(transform.position, desiredPosition, ref velocity, smoothSpeed);
+
+        // Si está activado, hacer que la cámara mire hacia el jugador
+        if (lookAtTarget)
+        {
+            transform.LookAt(target);
+        }
+        else
+        {
+            // Mantener la rotación isométrica fija
+            transform.rotation = Quaternion.Euler(rotation);
+        }
+    }
+
+    // Función para restablecer la rotación isomótrica si es necesario
+    public void ResetIsometricRotation()
+    {
+        transform.rotation = Quaternion.Euler(rotation);
+    }
+}
